@@ -1,63 +1,122 @@
-import React from "react"
-import BrandLogo from './assets/Images/brand_logo.png'
-import ShoesImage from './assets/Images/shoe_image.png'
-import shops from './assets/Images/shops.png'
-function App() {
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import BrandLogo from './assets/Images/brand_logo.png';
+import Home from './pages/Home';
+import Menu from './pages/Menu';
+import Location from './pages/Location';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
+function Navigation() {
+  const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+  const isActive = (path) => {
+    return location.pathname === path ? "text-red-500 font-bold" : "text-gray-700";
+  };
+
+  const navLinks = [
+    { path: "/", label: "Home" },
+    { path: "/menu", label: "Menu" },
+    { path: "/location", label: "Location" },
+    { path: "/about", label: "About" },
+    { path: "/contact", label: "Contact" }
+  ];
 
   return (
-    <>
-      <nav className="bg-white p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <img src={BrandLogo} alt="Brand Logo" className="h-10 w-auto" />
-        </div>
+    <nav className="bg-white p-4 flex items-center justify-between shadow-md sticky top-0 z-50">
+      <Link to="/" className="flex items-center space-x-3 hover:scale-105 transition-transform duration-300">
+        <img src={BrandLogo} alt="Brand Logo" className="h-10 w-auto" />
+      </Link>
 
-        <div className="hidden md:flex items-center space-x-6">
-          <a href="#" className="text-gray-700 hover:text-red-500 font-medium">Menu</a>
-          <a href="#" className="text-gray-700 hover:text-red-500 font-medium">Location</a>
-          <a href="#" className="text-gray-700 hover:text-red-500 font-medium">About</a>
-          <a href="#" className="text-gray-700 hover:text-red-500 font-medium">Contact</a>
-        </div>
+      {/* Desktop Navigation */}
+      <div className="hidden md:flex items-center space-x-6">
+        {navLinks.map((link) => (
+          <Link
+            key={link.path}
+            to={link.path}
+            className={`${isActive(link.path)} hover:text-red-500 font-medium transition duration-300 transform hover:scale-110`}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+
+      <div className="flex items-center space-x-4">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden text-gray-700 hover:text-red-500 transition duration-300"
+          aria-label="Toggle menu"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            {isMobileMenuOpen ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
 
         <button
           type="submit"
-          className="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+          className="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600 transition duration-300 transform hover:scale-105 font-medium"
         >
           Login
         </button>
-      </nav>
-      <section className="bg-white px-6 md:px-16 py-12 flex flex-col md:flex-row items-center justify-between gap-10">
-        <div className="max-w-xl space-y-6">
-          <h1 className="text-5xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-            YOUR FEET<br /> DESERVE<br /> THE BEST
-          </h1>
-          <p className="text-gray-600 text-lg">
-            YOUR FEET DESERVE THE BEST AND WE’RE HERE TO HELP YOU WITH OUR SHOES.
-            Because just like your perfect match, the right pair will walk with you through everything.
-          </p>
+      </div>
 
-          <div className="flex space-x-4">
-            <button className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition duration-300">
-              Shop Now
-            </button>
-            <button className="border border-gray-800 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-100 transition duration-300">
-              Category
-            </button>
-          </div>
-          <div>
-            <h4 className="text-gray-700 font-semibold mt-6">Also Available On</h4>
-            <img src={shops} alt="Shop logos" className="mt-2 h-10 object-contain" />
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="absolute top-full left-0 right-0 bg-white shadow-lg md:hidden animate-slide-down">
+          <div className="flex flex-col space-y-2 p-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`${isActive(link.path)} hover:text-red-500 hover:bg-red-50 px-4 py-3 rounded-lg font-medium transition duration-300`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
-
-        <div>
-          <img src={ShoesImage} alt="Shoes" className="w-full max-w-md object-contain" />
-        </div>
-      </section>
-
-
-    </>
-  )
+      )}
+    </nav>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/location" element={<Location />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
